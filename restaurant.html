@@ -15,13 +15,14 @@
   <header>
     <!-- Beginning nav -->
     <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
+      <h1><a href="/" >Restaurant Reviews</a></h1>
     </nav>
-    <!-- End nav -->
-    <!-- Beginning breadcrumb -->
-    <ul id="breadcrumb" >
+    <ul id="breadcrumb" aria-label="breadcrumb">
       <li><a href="/">Home</a></li>
     </ul>
+    <!-- End nav -->
+    <!-- Beginning breadcrumb -->
+
   </header>
   <!-- End header -->
 
@@ -34,8 +35,10 @@
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
-      <h1 id="restaurant-name"></h1>
-      <img id="restaurant-img">
+      <h2 id="restaurant-name"></h2>
+      <picture id="restaurant-picture">
+        <img id="restaurant-img">
+      </picture>
       <div id="restaurant-info-wrapper">
         <p id="restaurant-cuisine"></p>
         <p id="restaurant-address"></p>
@@ -66,6 +69,18 @@
   <!-- Google Maps -->
   <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_tKbW6A5pQ-eupxI56myUnHLqYCzOjKo&libraries=places&callback=initMap"></script>-->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
+
+  <script>
+      if('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                  console.log('ServiceWorker registration successful');
+              }, function(err) {
+                  console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+      }
+  </script>
   <!-- End scripts -->
 
 </body>

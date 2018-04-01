@@ -86,7 +86,11 @@ nav h1 a {
     color: black;
     content: "/\00a0";
 }
-
+#breadcrumb [aria-current="page"]{
+  color: #000;
+  font-weight: 700;
+  text-decoration: none;
+}
 /* Add a color to all links inside the list */
 #breadcrumb li a {
     color: #0275d8;
