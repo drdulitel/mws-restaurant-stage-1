@@ -7,16 +7,35 @@ class DBHelper {
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
-  static get DATABASE_URL() {
+ /* static get DATABASE_URL() {
     const port = 80 // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
+    return `http://localhost:${port}/mws-restaurant-stage-1/data/restaurants.json`;
   }
-
+*/
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
+
+      fetch(`http://localhost:1337/restaurants/`)
+          .then(response => response.json())
+          .then(restaurantData)
+          .catch(err => requestError(err, 'restaurant'));
+
+
+      function restaurantData(restaurants){
+          callback(null, restaurants);
+      }
+
+
+      function requestError(err, part) {
+          console.log(err);
+          const error = (`Request failed. The error: ${err}`);
+          callback(error, null);
+      }
+
+
+   /* let xhr = new XMLHttpRequest();
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
       if (xhr.status === 200) { // Got a success response from server!
@@ -28,7 +47,7 @@ class DBHelper {
         callback(error, null);
       }
     };
-    xhr.send();
+    xhr.send();*/
   }
 
   /**
@@ -150,14 +169,22 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph1}`);
+    return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
   }
+  //todo remove those two functions
   static imageUrlForRestaurantSrcset(restaurant) {
-     return (`/img/${restaurant.photograph1} 800w, /img/${restaurant.photograph2} 400w,  /img/${restaurant.photograph3} 300w`);
+      return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
   }
   static imageUrlForRestaurantWebp(restaurant) {
-      return (`/img/${restaurant.photographwebp1} 800w, /img/${restaurant.photographwebp2} 400w , /img/${restaurant.photographwebp3} 300w`);
+      return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
   }
+    //todo uncomment this - add the images to server db ???
+ /* static imageUrlForRestaurantSrcset(restaurant) {
+     return (`/mws-restaurant-stage-1/img/${restaurant.photograph1} 800w, /img/${restaurant.photograph2} 400w,  /img/${restaurant.photograph3} 300w`);
+  }
+  static imageUrlForRestaurantWebp(restaurant) {
+      return (`/mws-restaurant-stage-1/img/${restaurant.photographwebp1} 800w, /img/${restaurant.photographwebp2} 400w , /img/${restaurant.photographwebp3} 300w`);
+  }*/
   /**
    * Map marker for a restaurant.
    */

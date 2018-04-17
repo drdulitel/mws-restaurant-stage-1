@@ -3,7 +3,6 @@ var urlsToCache = [
     '/',
     '/index.html',
     '/restaurant.html',
-    '/data/restaurants.json',
     '/css/styles.css',
     '/js/dbhelper.js',
     '/js/main.js',
