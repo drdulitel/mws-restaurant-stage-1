@@ -12,21 +12,45 @@ class DBHelper {
     return `http://localhost:${port}/mws-restaurant-stage-1/data/restaurants.json`;
   }
 */
+
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
 
+
       fetch(`http://localhost:1337/restaurants/`)
           .then(response => response.json())
-          .then(restaurantData)
+          .then(restaurantDataFunc)
           .catch(err => requestError(err, 'restaurant'));
 
 
-      function restaurantData(restaurants){
-          callback(null, restaurants);
-      }
+      function restaurantDataFunc(restaurantsData){
+          var openDb = idb.open('restaurantsDataBase', 1, function(upgradeDb){
+              var objectStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+              objectStore.createIndex('by-name', 'name', {unique: false});
+          });
 
+          openDb.then(function(db){
+              if (!db) return;
+
+              var restaurantObjectStore = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
+              restaurantsData.forEach(function(restaurant) {
+                  restaurantObjectStore.put(restaurant);
+              });
+          })
+
+          openDb.then(function(db) {
+              if (!db) return;
+             var index = db.transaction('restaurants').objectStore('restaurants').index('by-name');
+             index.getAll().then(function(restaurantsData){
+                 console.log('restaurantsData');
+                console.log(restaurantsData);
+                callback(null, restaurantsData);
+             });
+
+          });
+      }
 
       function requestError(err, part) {
           console.log(err);
@@ -34,6 +58,10 @@ class DBHelper {
           callback(error, null);
       }
 
+
+      function showRestaurants(){
+
+      }
 
    /* let xhr = new XMLHttpRequest();
     xhr.open('GET', DBHelper.DATABASE_URL);

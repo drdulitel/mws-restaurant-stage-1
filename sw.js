@@ -5,6 +5,7 @@ var urlsToCache = [
     '/restaurant.html',
     '/css/styles.css',
     '/js/dbhelper.js',
+    '/js/idb.js',
     '/js/main.js',
     '/js/restaurant_info.js',
 
@@ -13,7 +14,6 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE)
             .then(function(cache) {
-                console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
     );
@@ -24,7 +24,7 @@ self.addEventListener('fetch', function(event) {
         caches.match(event.request)
             .then(function(response) {
                     if (response) {
-                        console.log(response);
+                        console.log("The response is:" + response);
                         return response;
                     }
                 var fetchRequest = event.request.clone();
