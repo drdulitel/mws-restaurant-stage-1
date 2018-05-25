@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <!-- Normalize.css for better cross-browser consistency -->
@@ -7,6 +7,7 @@
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#673AB6">
   <title>Restaurant Info</title>
 </head>
 
@@ -36,9 +37,9 @@
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <h2 id="restaurant-name"></h2>
-      <picture id="restaurant-picture">
+      <!--<picture id="restaurant-picture">-->
         <img id="restaurant-img">
-      </picture>
+      <!--</picture>-->
       <div id="restaurant-info-wrapper">
         <p id="restaurant-cuisine"></p>
         <p id="restaurant-address"></p>
@@ -62,7 +63,11 @@
   <!-- End main -->
 
   <!-- Beginning scripts -->
+
   <!-- Database helpers -->
+
+  <script type="text/javascript" src="js/lazyload.min.js"></script>
+  <script type="text/javascript"> new LazyLoad();  </script>
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <script type="text/javascript" src="js/idb.js"></script>
   <!-- Main javascript file -->
@@ -70,18 +75,18 @@
   <!-- Google Maps -->
   <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_tKbW6A5pQ-eupxI56myUnHLqYCzOjKo&libraries=places&callback=initMap"></script>-->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
-
   <script>
       if('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
-              navigator.serviceWorker.register('/sw.js').then(function(registration) {
+              navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
                   console.log('ServiceWorker registration successful');
-              }, function(err) {
-                  console.log('ServiceWorker registration failed: ', err);
+              }).catch(function(error) {
+                  console.log('ServiceWorker registration failed: ', error);
               });
           });
       }
   </script>
+
   <!-- End scripts -->
 
 </body>

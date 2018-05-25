@@ -13,75 +13,115 @@ class DBHelper {
   }
 */
 
+
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
-
-
-      fetch(`http://localhost:1337/restaurants/`)
-          .then(response => response.json())
-          .then(restaurantDataFunc)
-          .catch(err => requestError(err, 'restaurant'));
-
-
-      function restaurantDataFunc(restaurantsData){
-          var openDb = idb.open('restaurantsDataBase', 1, function(upgradeDb){
-              var objectStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
-              objectStore.createIndex('by-name', 'name', {unique: false});
-          });
-
-          openDb.then(function(db){
-              if (!db) return;
-
-              var restaurantObjectStore = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
-              restaurantsData.forEach(function(restaurant) {
-                  restaurantObjectStore.put(restaurant);
-              });
-          })
-
-          openDb.then(function(db) {
-              if (!db) return;
-             var index = db.transaction('restaurants').objectStore('restaurants').index('by-name');
-             index.getAll().then(function(restaurantsData){
-                 console.log('restaurantsData');
-                console.log(restaurantsData);
-                callback(null, restaurantsData);
-             });
-
-          });
-      }
-
-      function requestError(err, part) {
-          console.log(err);
-          const error = (`Request failed. The error: ${err}`);
-          callback(error, null);
-      }
-
-
-      function showRestaurants(){
-
-      }
-
-   /* let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();*/
+/*  static get DATABASE_URL() {
+      const port = 80 // Change this to your server port
+      return `http://localhost:${port}/mws-restaurant-stage-1/data/restaurants.json`;
   }
+
+  static fetchRestaurants(callback) {
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', DBHelper.DATABASE_URL);
+      xhr.onload = () => {
+          if (xhr.status === 200) { // Got a success response from server!
+              const json = JSON.parse(xhr.responseText);
+              const restaurants = json.restaurants;
+              callback(null, restaurants);
+          } else { // Oops!. Got an error from server.
+              const error = (`Request failed. Returned status of ${xhr.status}`);
+              callback(error, null);
+          }
+      };
+      xhr.send();
+  }*/
+
+    static get DATABASE_URL() {
+        const port = 1337; // Change this to your server port
+        return `http://localhost:${port}/restaurants`;
+    }
+
+    static openDB(){
+        const indexedDB = idb.open('restaurantsIndexedDB', 1, function (upgradeDb) {
+            var objectStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id', autoIncrement: true});
+            // objectStore.createIndex('by-name', 'name', {unique: false});
+        });
+        return indexedDB;
+    }
+
+    static createObjectStore(db, transactionMode){
+        let trans = db.transaction('restaurants', transactionMode);
+        return trans.objectStore('restaurants');
+    }
+
+    static createIndexedDbRestaurants(restaurantsData){
+
+        var restaurant = {
+            db: null,
+            init: function () {
+                if (restaurant.db) {
+                    return Promise.resolve(restaurant.db);
+                }
+
+                return DBHelper.openDB().then(function (db) {
+                    return restaurant.db = db;
+                });
+            },
+
+            restaurantObjectStore: function (transMode) {
+                return restaurant.init().then(function (db) {
+                    return DBHelper.createObjectStore(db, transMode);
+                })
+            }
+        };
+
+        restaurant.restaurantObjectStore('readwrite').then(function (restaurantObjectStore) {
+            restaurantsData.forEach(function (restaurant) {
+                restaurantObjectStore.put(restaurant);
+            });
+        });
+
+
+    }
+    static readIndexedDbRestaurants(callback){
+        return DBHelper.openDB().then(function (db) {
+            let store = DBHelper.createObjectStore(db, 'readonly');
+            store.getAll().then(function (restaurantsData) {
+                callback(restaurantsData);
+            });
+        });
+    }
+
+    static fetchRestaurants(callback) {
+
+        fetch(DBHelper.DATABASE_URL, {})
+            .then(response => response.json())
+            .then(restaurantsJSON => {
+                DBHelper.createIndexedDbRestaurants(restaurantsJSON);
+                callback(null, restaurantsJSON);
+            })
+            .catch(err => requestError(err));
+
+        function requestError(err) {
+            console.log(err);
+            const error = (`Request failed. The error: ${err}`);
+
+            //try to retrieve data from indexeddb
+            DBHelper.readIndexedDbRestaurants(function(data){
+                callback(null, data);
+            });
+
+            callback(error, null);
+        }
+    }
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
+
     // fetch all restaurants with proper error handling.
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -133,6 +173,7 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+      console.log('fetch by cuisine and neighbr');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -154,6 +195,7 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
+      console.log('fetch by neight');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -172,6 +214,7 @@ class DBHelper {
    * Fetch all cuisines with proper error handling.
    */
   static fetchCuisines(callback) {
+      console.log('fetch cuisine');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -199,10 +242,14 @@ class DBHelper {
   static imageUrlForRestaurant(restaurant) {
     return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
   }
+
+    static imageUrlForRestaurantSrcset(restaurant) {
+        return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
+    }
   //todo remove those two functions
-  static imageUrlForRestaurantSrcset(restaurant) {
+  /*static imageUrlForRestaurantSrcset(restaurant) {
       return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
-  }
+  }*/
   static imageUrlForRestaurantWebp(restaurant) {
       return (`/mws-restaurant-stage-1/img/${restaurant.photograph}`);
   }

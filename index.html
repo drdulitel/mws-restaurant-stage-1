@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<!--<html>-->
+<html lang="en">
 
 <head>
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#673AB6">
   <title>Restaurant Reviews</title>
 </head>
 
 <body>
+
   <header>
     <nav>
       <h1><a href="/">Restaurant Reviews</a></h1>
@@ -22,13 +25,19 @@
     <section>
       <div class="filter-options">
         <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
-          <option value="all">All Neighborhoods</option>
-        </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
-          <option value="all">All Cuisines</option>
-        </select>
-      </div>
+        <!--<div>-->
+          <label class="select-label" id="neighborhoods-label" for="neighborhoods-select">Select neighborhoods:</label>
+          <select  id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+            <option  value="all">All Neighborhoods</option>
+          </select>
+        <!--</div>-->
+        <!--<div>-->
+          <label class="select-label" id="cuisines-label" for="cuisines-select">Select cuisines</label>
+          <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+            <option value="all">All Cuisines</option>
+          </select>
+        </div>
+      <!--</div>-->
       <ul id="restaurants-list"></ul>
     </section>
   </main>
@@ -36,7 +45,10 @@
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
+  <script src="js/lazyload.min.js"></script>
+  <script type="text/javascript"> new LazyLoad();  </script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.7.1/lazyload.min.js"></script>-->
 
 
   <footer id="footer">
@@ -45,7 +57,7 @@
   <script>
       if('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
-              navigator.serviceWorker.register('/sw.js').then(function(registration) {
+              navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
                   console.log('ServiceWorker registration successful');
               }, function(err) {
                   console.log('ServiceWorker registration failed: ', err);
