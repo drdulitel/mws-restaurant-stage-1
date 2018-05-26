@@ -1,70 +1,75 @@
 <!DOCTYPE html>
-<!--<html>-->
 <html lang="en">
-
-<head>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="stylesheet" href="css/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Reviews</title>
+    <link rel="manifest" href="js/manifest.json">
     <meta name="theme-color" content="#673AB6">
-  <title>Restaurant Reviews</title>
-</head>
+    <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  </head>
 
-<body>
+  <body>
+    <header>
+      <nav>
+        <h1><a href="/">Restaurant Reviews</a></h1>
+      </nav>
+    </header>
 
-  <header>
-    <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
-  </header>
-
-  <main id="maincontent">
-    <section id="map-container" role="application" aria-label="map">
-      <div id="map"></div>
-    </section>
-    <section>
-      <div class="filter-options">
-        <h2>Filter Results</h2>
-        <!--<div>-->
-          <label class="select-label" id="neighborhoods-label" for="neighborhoods-select">Select neighborhoods:</label>
-          <select  id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
-            <option  value="all">All Neighborhoods</option>
-          </select>
-        <!--</div>-->
-        <!--<div>-->
-          <label class="select-label" id="cuisines-label" for="cuisines-select">Select cuisines</label>
-          <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
-            <option value="all">All Cuisines</option>
-          </select>
-        </div>
-      <!--</div>-->
-      <ul id="restaurants-list"></ul>
-    </section>
-  </main>
-
-  <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
-  <script src="js/lazyload.min.js"></script>
-  <script type="text/javascript"> new LazyLoad();  </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
-  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.7.1/lazyload.min.js"></script>-->
+    <main id="maincontent">
+      <section id="map-container" role="application" aria-label="map">
+        <img id = "static_map" onclick="swap_map()" alt="click to interactive map"
+             src="https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&zoom=11&size=600x400&scale=2&format=jpg&maptype=roadmap
+              &markers=
+                  color:red%7Clabel:S%7C40.713829,-73.989667|
+                  color:red%7Clabel:S%7C40.683555,-73.966393|
+                  color:red%7Clabel:S%7C40.747143,-73.985414|
+                  color:red%7Clabel:S%7C40.722216,-73.987501|
+                  color:red%7Clabel:S%7C40.705089,-73.933585|
+                  color:red%7Clabel:S%7C40.674925,-74.016162|
+                  color:red%7Clabel:S%7C40.727397,-73.983645|
+                  color:red%7Clabel:S%7C40.726584,-74.002082|
+                  color:red%7Clabel:S%7C40.743797,-73.950652|
+                  color:red%7Clabel:S%7C40.743394,-73.954235|
+                &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
+        <div id="map"></div>
+      </section>
+      <section>
+        <div class="filter-options">
+          <h2>Filter Results</h2>
+            <label class="select-label" id="neighborhoods-label" for="neighborhoods-select">Select neighborhoods:</label>
+            <select  id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+              <option  value="all">All Neighborhoods</option>
+            </select>
+            <label class="select-label" id="cuisines-label" for="cuisines-select">Select cuisines</label>
+            <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+              <option value="all">All Cuisines</option>
+            </select>
+          </div>
+        <ul id="restaurants-list"></ul>
+      </section>
+    </main>
 
 
-  <footer id="footer">
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
-  </footer>
-  <script>
-      if('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
-              navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
-                  console.log('ServiceWorker registration successful');
-              }, function(err) {
-                  console.log('ServiceWorker registration failed: ', err);
-              });
-          });
-      }
-  </script>
-</body>
+    <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
+    <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
+    <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
+    <script src="js/manifest.json"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
 
+    <footer id="footer">
+      Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    </footer>
+    <script>
+        if('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+  </body>
 </html>

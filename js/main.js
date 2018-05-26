@@ -138,29 +138,12 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
-  // const picture = document.createElement('picture');
-
-/*
-  const sourcewebp = document.createElement('source');
-  sourcewebp.srcset = DBHelper.imageUrlForRestaurantWebp(restaurant);
-  sourcewebp.type = 'image/webp';
-  picture.append(sourcewebp);
-*/
-
-  const source = document.createElement('source');
-  source.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
-  source.type = 'image/jpeg';
-  // picture.append(source);
-    li.append(source);
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   image.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = 'Picture of '+restaurant.name+' restaurant';
-  // picture.append(image);
-
   li.append(image);
-  // li.append(picture);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
@@ -199,3 +182,35 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 
 self.addEventListener('fetch', function(event){
 });
+
+//swap between the static google map to the interactive map
+const swap_map = () => {
+    if (document.getElementById('map').style.display !== 'block')
+    {
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('static_map').style.display = 'none';
+    }
+}
+
+//lazy loading for images using IntersectionObserver
+const images = document.querySelectorAll(".restaurant-img");
+const options = {
+    rootMargin: "50px 0px",
+    threshold: 0.01
+};
+if (!('IntersectionObserver' in window)) {
+    Array.from(images).forEach(image => preloadImage(image));
+} else {
+    let observer = new IntersectionObserver(onIntersection, options);
+    images.forEach(image => {
+        observer.observe(image);
+    });
+}
+function onIntersection(entries) {
+    entries.forEach(entry => {
+        if (entry.intersectionRatio > 0) {
+            observer.unobserve(entry.target);
+            preloadImage(entry.target);
+        }
+    });
+}

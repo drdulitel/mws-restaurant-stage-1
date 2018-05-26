@@ -9,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#673AB6">
   <title>Restaurant Info</title>
+  <link rel="manifest" href="js/manifest.json">
 </head>
 
 <body class="inside">
@@ -23,17 +24,12 @@
     </ul>
     <!-- End nav -->
     <!-- Beginning breadcrumb -->
-
   </header>
   <!-- End header -->
 
   <!-- Beginning main -->
   <main id="maincontent">
-    <!-- Beginning map -->
-    <section id="map-container" role="application" aria-label="map">
-      <div id="map"></div>
-    </section>
-    <!-- End map -->
+
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <h2 id="restaurant-name"></h2>
@@ -47,7 +43,14 @@
       </div>
     </section>
     <!-- end restaurant -->
-
+    <!-- Beginning map -->
+    <section id="map-container" role="application" aria-label="map">
+      <img id = "static_map" onclick="swap_map()" alt="click to interactive map"
+           src="https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&zoom=13&size=600x300&scale=2&format=jpg&maptype=roadmap
+                &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
+      <div id="map"></div>
+    </section>
+    <!-- End map -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
@@ -58,22 +61,18 @@
       Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
     </footer>
     <!-- End footer -->
-
   </main>
   <!-- End main -->
 
   <!-- Beginning scripts -->
-
   <!-- Database helpers -->
 
-  <script type="text/javascript" src="js/lazyload.min.js"></script>
-  <script type="text/javascript"> new LazyLoad();  </script>
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <script type="text/javascript" src="js/idb.js"></script>
-  <!-- Main javascript file -->
   <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <!-- Main javascript file -->
+
   <!-- Google Maps -->
-  <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_tKbW6A5pQ-eupxI56myUnHLqYCzOjKo&libraries=places&callback=initMap"></script>-->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
   <script>
       if('serviceWorker' in navigator) {
@@ -86,9 +85,6 @@
           });
       }
   </script>
-
   <!-- End scripts -->
-
 </body>
-
 </html>

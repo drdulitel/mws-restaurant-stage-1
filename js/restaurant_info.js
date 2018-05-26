@@ -9,13 +9,13 @@ window.initMap = () => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+        self.map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16,
+            center: restaurant.latlng,
+            scrollwheel: false
+        });
+        fillBreadcrumb();
+        DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
 }
@@ -57,9 +57,9 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img';
-  image.alt = 'Picture of '+restaurant.name+' restaurant';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt = 'Picture of '+restaurant.name+' restaurant';
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -91,7 +91,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     hours.appendChild(row);
   }
 }
-
 /**
  * Create all reviews HTML and add them to the webpage.
  */
@@ -164,3 +163,14 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+const swap_map = () => {
+    if (document.getElementById('map').style.display !== 'block')
+    {
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('static_map').style.display = 'none';
+    }
+}
+
+
+
