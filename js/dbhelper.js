@@ -208,11 +208,13 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-      return (`/mws-restaurant-stage-1/img/${restaurant.photograph}` + '.jpg');
+      return (`/img/${restaurant.photograph}` + '.jpg');
+      // return (`/mws-restaurant-stage-1/img/${restaurant.photograph}` + '.jpg');
   }
 
   static imageUrlForRestaurantSrcset(restaurant) {
-      return `/mws-restaurant-stage-1/img/${restaurant.small_img} 1x, /mws-restaurant-stage-1/img/${restaurant.large_img} 2x`;
+      return `/img/${restaurant.small_img} 1x, /img/${restaurant.large_img} 2x`;
+      // return `/mws-restaurant-stage-1/img/${restaurant.small_img} 1x, /mws-restaurant-stage-1/img/${restaurant.large_img} 2x`;
   }
   /**
    * Map marker for a restaurant.

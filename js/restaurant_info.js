@@ -141,10 +141,13 @@ createReviewHTML = (review) => {
  * Add restaurant name to the breadcrumb navigation menu
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
-  const breadcrumb = document.getElementById('breadcrumb');
+  const breadcrumb = document.getElementById('breadcrumb').children[0];
+  // const ol = breadcrumb.child('ol');
+
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   li.setAttribute('aria-current', 'page');
+  // ol.appendChild(li);
   breadcrumb.appendChild(li);
 }
 

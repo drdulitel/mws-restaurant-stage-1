@@ -4,9 +4,11 @@
     <link rel="stylesheet" href="css/styles.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Reviews</title>
-    <link rel="manifest" href="js/manifest.json">
+    <!--<link rel="manifest" href="js/manifest.json">-->
     <meta name="theme-color" content="#673AB6">
     <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+    <link rel="manifest" href="/manifest.json">
+
   </head>
 
   <body>
@@ -54,7 +56,6 @@
     <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
     <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
     <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
-    <script src="js/manifest.json"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
 
     <footer id="footer">
@@ -63,7 +64,8 @@
     <script>
         if('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+//                navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
                     console.log('ServiceWorker registration successful');
                 }, function(err) {
                     console.log('ServiceWorker registration failed: ', err);

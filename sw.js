@@ -17,6 +17,17 @@ var allCaches = [
 ];*/
 
 var urlsToCache = [
+    '/',
+    '/index.html',
+    '/restaurant.html',
+    '/css/styles.css',
+    '/js/dbhelper.js',
+    '/js/idb.js',
+    '/js/main.js',
+    '/js/restaurant_info.js',
+];
+/*
+var urlsToCache = [
     '/mws-restaurant-stage-1/',
     '/mws-restaurant-stage-1/index.html',
     '/mws-restaurant-stage-1/restaurant.html',
@@ -25,8 +36,7 @@ var urlsToCache = [
     '/mws-restaurant-stage-1/js/idb.js',
     '/mws-restaurant-stage-1/js/main.js',
     '/mws-restaurant-stage-1/js/restaurant_info.js',
-
-];
+];*/
 
 
 self.addEventListener('install', function(event) {
@@ -49,7 +59,6 @@ self.addEventListener('fetch', function(event) {
         caches.match(event.request)
             .then(function(response) {
                     if (response) {
-                        console.log("The response is:" + response);
                         return response;
                     }
                 var fetchRequest = event.request.clone();
