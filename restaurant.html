@@ -36,10 +36,15 @@
 
     <!-- Beginning restaurant -->
     <section id="restaurant-container">
+      <!-- Beginning favorite -->
+      <div id="fav_wrapper"><img id="star" data-fav = 0></div>
+      <!-- End favorite -->
       <h2 id="restaurant-name"></h2>
+
       <!--<picture id="restaurant-picture">-->
         <img id="restaurant-img">
       <!--</picture>-->
+
       <div id="restaurant-info-wrapper">
         <p id="restaurant-cuisine"></p>
         <p id="restaurant-address"></p>
@@ -58,6 +63,15 @@
     <!-- Beginning reviews -->
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
+      <div class="formWrapper">
+        <form id="submitReview">
+          <label for="name">Name</label>
+          <input type = "text" id = "name" name = "name" placeholder = "Enter your name">
+          <label for="review"></label>
+          <textarea rows="4" cols="50" id = "review" placeholder = "Enter your review"></textarea>
+          <input type = "submit" value = "Submit" onclick="submitReview()" >
+        </form>
+      </div>
     </section>
     <!-- End reviews -->
     <!-- Beginning footer -->

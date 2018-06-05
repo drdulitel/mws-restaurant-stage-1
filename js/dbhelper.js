@@ -68,7 +68,6 @@ class DBHelper {
                 restaurants.forEach(restaurant =>{
                     restaurant.small_img = `${restaurant.id}` + '_400.jpg';
                     restaurant.large_img = `${restaurant.id}` + '.jpg';
-                    // restaurant.small_img = `${restaurant.id}` + '_400.jpg';
                 });
                 DBHelper.createIndexedDbRestaurants(restaurants);
                 callback(null, restaurants);
@@ -89,24 +88,36 @@ class DBHelper {
     }
 
   /**
-   * Fetch a restaurant by its ID.
+   * Un/Favorite restaurant by its ID.
    */
-  static fetchRestaurantById(id, callback) {
-
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
-        }
-      }
-    });
+  static setFavoriteRestaurantById(id, fav, callback) {
+      fetch(DBHelper.DATABASE_URL + '/' + id, {
+          method: 'POST',
+          headers : new Headers(),
+          body:JSON.stringify({is_favorite: fav})
+      }).then((res) => res.json())
+          .then((data) =>  console.log(data))
+          .catch((err)=>console.log(err))
   }
+
+    /**
+     * Fetch a restaurant by its ID.
+     */
+    static fetchRestaurantById(id, callback) {
+        // fetch all restaurants with proper error handling.
+        DBHelper.fetchRestaurants((error, restaurants) => {
+            if (error) {
+                callback(error, null);
+            } else {
+                const restaurant = restaurants.find(r => r.id == id);
+                if (restaurant) { // Got the restaurant
+                    callback(null, restaurant);
+                } else { // Restaurant does not exist in the database
+                    callback('Restaurant does not exist', null);
+                }
+            }
+        });
+    }
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
@@ -230,5 +241,18 @@ class DBHelper {
     );
     return marker;
   }
+
+    /**
+     * Save
+     */
+    static saveReview(id, review, reviewerName , callback) {
+        fetch(DBHelper.DATABASE_URL + '/' + id, {
+            method: 'POST',
+            headers : new Headers(),
+            body:JSON.stringify({is_favorite: fav})
+        }).then((res) => res.json())
+            .then((data) =>  console.log(data))
+            .catch((err)=>console.log(err))
+    }
 
 }

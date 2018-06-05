@@ -68,10 +68,46 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+  // indicate favorite button
+    favoriteToggle();
+
   // fill reviews
   fillReviewsHTML();
+};
+
+/**
+ * Like or Unlike restaurant
+ */
+favoriteToggle = (favoriteRest = self.restaurant) =>{
+    let imgElement = document.getElementById('star');
+    var fav = favoriteRest.is_favorite;
+    (fav) ? setFavoriteResImg(imgElement) : unsetFavoriteResImg(imgElement);
+
+    imgElement.onclick = function(event){
+      fav = !fav;
+        saveInDb(favoriteRest.id, fav);
+        (fav) ? setFavoriteResImg(imgElement) : unsetFavoriteResImg(imgElement);
+    };
+};
+function setFavoriteResImg(imgElement){
+    imgElement.src = 'img/star_fav.png';
+    imgElement.alt = 'My favorite restaurant';
+}
+function unsetFavoriteResImg(imgElement){
+    imgElement.src = 'img/star_unfav.png';
+    imgElement.alt = 'Choose me as favorite restaurant';
 }
 
+function saveInDb(favoriteRestId, fav){
+    DBHelper.setFavoriteRestaurantById(favoriteRestId, fav, (error, restaurant) => {
+        self.restaurant = restaurant;
+        if (!restaurant) {
+            console.error(error);
+            return;
+        }
+        callback(null, restaurant)
+    });
+}
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
@@ -170,7 +206,6 @@ const swap_map = () => {
         document.getElementById('map').style.display = 'block';
         document.getElementById('static_map').style.display = 'none';
     }
-}
-
+};
 
 

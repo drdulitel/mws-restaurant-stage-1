@@ -161,6 +161,11 @@ nav h1 a {
   text-align: left;
   width: 270px;
 }
+#star{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
 #restaurants-list .restaurant-img {
   background-color: #ccc;
   display: block;
