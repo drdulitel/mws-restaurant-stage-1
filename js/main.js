@@ -17,11 +17,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 fetchNeighborhoods = () => {
   DBHelper.fetchNeighborhoods((error, neighborhoods) => {
+    console.log('rory1');
     if (error) { // Got an error
+        console.log('rory2');
       console.error(error);
     } else {
+        console.log('rory3');
+        console.log(neighborhoods);
       self.neighborhoods = neighborhoods;
+        console.log('rory4');
       fillNeighborhoodsHTML();
+        console.log('rory5');
     }
   });
 }
@@ -87,6 +93,7 @@ window.initMap = () => {
  * Update page and map for current restaurants.
  */
 updateRestaurants = () => {
+  console.log('updateRestaurants');
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -97,9 +104,12 @@ updateRestaurants = () => {
   const neighborhood = nSelect[nIndex].value;
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
+    console.log('asdasdasds');
     if (error) { // Got an error!
       console.error(error);
     } else {
+      console.log('************************');
+      console.log(restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }

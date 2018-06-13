@@ -64,12 +64,21 @@
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
       <div class="formWrapper">
-        <form id="submitReview">
+        <form action="#" method="POST" id="submitReviewForm">
           <label for="name">Name</label>
-          <input type = "text" id = "name" name = "name" placeholder = "Enter your name">
-          <label for="review"></label>
-          <textarea rows="4" cols="50" id = "review" placeholder = "Enter your review"></textarea>
-          <input type = "submit" value = "Submit" onclick="submitReview()" >
+          <input type="text" id = "name" name = "name" placeholder = "Enter your name">
+          <label for="reviewText"></label>
+          <textarea rows="4" cols="50" id = "reviewText" placeholder = "Enter your review"></textarea>
+          <!--todo julia can berewritten in js!!!! -->
+          <label for="rating">Choose your rating</label>
+          <select id="rating">
+            <option class="rating_5" value = "5" selected="selected" >5</option>
+            <option class="rating_4" value = "4" >4</option>
+            <option class="rating_3" value = "3" >3</option>
+            <option class="rating_2" value = "2" >2</option>
+            <option class="rating_1" value = "1" >1</option>
+          </select>
+          <input id="submitId" type = "button" value = "Submit" onclick="submitReview()">
         </form>
       </div>
     </section>

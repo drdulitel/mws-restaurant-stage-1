@@ -1,4 +1,5 @@
 let restaurant;
+let reviews;
 var map;
 
 /**
@@ -40,9 +41,34 @@ fetchRestaurantFromURL = (callback) => {
         return;
       }
       fillRestaurantHTML();
+
       callback(null, restaurant)
     });
   }
+}
+
+/**
+ * Get current restaurant from page URL.
+ */
+fetchReviewFromRestaurantId = (callback) => {
+    if (self.reviews) { // reviews already fetched!
+        callback(null, self.reviews)
+        return;
+    }
+    const id = getParameterByName('id');
+    if (!id) { // no id found in URL
+        error = 'No restaurant id in URL'
+        callback(error, null);
+    } else {
+        DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
+            self.reviews = reviews;
+           if (!reviews) {
+                console.error(error);
+                return;
+            }
+            fillReviewsHTML();
+        });
+    }
 }
 
 /**
@@ -71,8 +97,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   // indicate favorite button
     favoriteToggle();
 
-  // fill reviews
-  fillReviewsHTML();
+  // fetch and fill reviews
+   fetchReviewFromRestaurantId();
 };
 
 /**
@@ -85,7 +111,7 @@ favoriteToggle = (favoriteRest = self.restaurant) =>{
 
     imgElement.onclick = function(event){
       fav = !fav;
-        saveInDb(favoriteRest.id, fav);
+        saveFavoriteInDb(favoriteRest.id, fav);
         (fav) ? setFavoriteResImg(imgElement) : unsetFavoriteResImg(imgElement);
     };
 };
@@ -98,7 +124,7 @@ function unsetFavoriteResImg(imgElement){
     imgElement.alt = 'Choose me as favorite restaurant';
 }
 
-function saveInDb(favoriteRestId, fav){
+function saveFavoriteInDb(favoriteRestId, fav){
     DBHelper.setFavoriteRestaurantById(favoriteRestId, fav, (error, restaurant) => {
         self.restaurant = restaurant;
         if (!restaurant) {
@@ -130,7 +156,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -208,4 +234,26 @@ const swap_map = () => {
     }
 };
 
+function submitReview(){
+  //todo julia reverse the reviews so the latest will be shown first
+  //julia here
+  let name = document.getElementById("name").value;
+  let review = document.getElementById("reviewText").value;
+  let selection = document.getElementById("rating");
+  let rating = selection.options[selection.selectedIndex].value;
 
+  let reviewData = {name: name, rating: rating, comments: review, restId: self.restaurant.id}
+  if (name != "" && review != ""){
+
+      var date = new Date(Date.now());
+      let month = date.getMonth()+1;
+      reviewData.date = date.getDate() + '.' + month + '.' + date.getFullYear();
+
+      DBHelper.saveReview(reviewData);
+
+      const container = document.getElementById('reviews-container');
+      const ul = document.getElementById('reviews-list');
+      ul.appendChild(createReviewHTML(reviewData));
+      container.appendChild(ul);
+  }
+}

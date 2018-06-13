@@ -8,7 +8,12 @@ class DBHelper {
         return `http://localhost:${port}/restaurants`;
     }
 
-    static openDB(){
+    static get DATABASE_URL_REVIEW() {
+        const port = 1337; // Change this to your server port
+        return `http://localhost:${port}/reviews/`;
+    }
+
+    static openRestDB(){
         const indexedDB = idb.open('restaurantsIndexedDB', 1, function (upgradeDb) {
             var objectStore = upgradeDb.createObjectStore('restaurants', {keyPath: 'id', autoIncrement: true});
             // objectStore.createIndex('by-name', 'name', {unique: false});
@@ -16,7 +21,15 @@ class DBHelper {
         return indexedDB;
     }
 
-    static createObjectStore(db, transactionMode){
+    static openReviewDB(){
+        const indexedDB = idb.open('reviewsIndexedDB', 1, function (upgradeDb) {
+            var objectStore = upgradeDb.createObjectStore('reviews', {keyPath: 'id', autoIncrement: true});
+            objectStore.createIndex('by-rest-id', 'restaurant_id', {unique: false});
+        });
+        return indexedDB;
+    }
+
+    static createObjectStoreFunc(name, db, transactionMode){
         let trans = db.transaction('restaurants', transactionMode);
         return trans.objectStore('restaurants');
     }
@@ -31,14 +44,14 @@ class DBHelper {
                     return Promise.resolve(restaurant.db);
                 }
 
-                return DBHelper.openDB().then(function (db) {
+                return DBHelper.openRestDB().then(function (db) {
                     return restaurant.db = db;
                 });
             },
 
             restaurantObjectStore: function (transMode) {
                 return restaurant.init().then(function (db) {
-                    return DBHelper.createObjectStore(db, transMode);
+                    return DBHelper.createObjectStoreFunc('restaurants', db, transMode);
                 })
             }
         };
@@ -48,20 +61,48 @@ class DBHelper {
                 restaurantObjectStore.put(restaurant);
             });
         });
-
-
     }
-    static readIndexedDbRestaurants(callback){
-        return DBHelper.openDB().then(function (db) {
-            let store = DBHelper.createObjectStore(db, 'readonly');
-            store.getAll().then(function (restaurantsData) {
-                callback(restaurantsData);
+
+
+    static createIndexedDbReviews(reviewsData){
+
+        var review = {
+            db: null,
+            init: function () {
+
+                if (review.db) {
+                    return Promise.resolve(review.db);
+                }
+                return DBHelper.openReviewDB().then(function (db) {
+                    return review.db = db;
+                });
+            },
+
+            reviewObjectStore: function (transMode) {
+                return review.init().then(function (db) {
+                    return DBHelper.createObjectStoreFunc('reviews', db, transMode);
+                })
+            }
+        };
+
+        review.reviewObjectStore('readwrite').then(function (reviewObjectStore) {
+            reviewsData.forEach(function (review) {
+                reviewObjectStore.put(review);
+            });
+        });
+    }
+
+    static readIndexedDbReviews(callback){
+        return DBHelper.openReviewDB().then(function (db) {
+            let store = DBHelper.createObjectStoreFunc('reviews', db, 'readonly');
+            store.getAll().then(function (reviewsData) {
+                callback(reviewsData);
             });
         });
     }
 
     static fetchRestaurants(callback) {
-
+        console.log('^^^^^^^^^^^^^^^^^^^^');
         fetch(DBHelper.DATABASE_URL, {})
             .then(response => response.json())
             .then(restaurants => {
@@ -86,7 +127,14 @@ class DBHelper {
             callback(error, null);
         }
     }
-
+    static readIndexedDbRestaurants(callback){
+        return DBHelper.openRestDB().then(function (db) {
+            let store = DBHelper.createObjectStoreFunc('restaurants', db, 'readonly');
+            store.getAll().then(function (restaurantsData) {
+                callback(restaurantsData);
+            });
+        });
+    }
   /**
    * Un/Favorite restaurant by its ID.
    */
@@ -155,6 +203,7 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+      console.log('fetchRestaurantByCuisineAndNeighborhood');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -176,6 +225,7 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
+      console.log('fetchNeighborhoods');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -194,6 +244,7 @@ class DBHelper {
    * Fetch all cuisines with proper error handling.
    */
   static fetchCuisines(callback) {
+      console.log('fetchCuisines');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -243,16 +294,53 @@ class DBHelper {
   }
 
     /**
-     * Save
+     * Save Review
      */
-    static saveReview(id, review, reviewerName , callback) {
-        fetch(DBHelper.DATABASE_URL + '/' + id, {
+    // static saveReview(reviewData , callback) {
+    static saveReview(reviewData) {
+
+        fetch(DBHelper.DATABASE_URL_REVIEW, {
             method: 'POST',
             headers : new Headers(),
-            body:JSON.stringify({is_favorite: fav})
+            body:JSON.stringify({ restaurant_id: reviewData.restId, name: reviewData.name, rating: reviewData.rating, comments: reviewData.comments })
         }).then((res) => res.json())
             .then((data) =>  console.log(data))
             .catch((err)=>console.log(err))
+    }
+
+    //Fetch reviews by restaurant id
+    static fetchReviewsByRestaurantId(id, callback) {
+       fetch(DBHelper.DATABASE_URL_REVIEW + '?restaurant_id=' + id, {})
+            .then(response => response.json())
+            .then(reviews => {
+                reviews.forEach(review =>{
+                    let date = review.updatedAt;
+                    if (!review.updatedAt){
+                        date = review.createdAt;
+                    }
+                    //set formatted date
+                    let formattedDate = new Date(date);
+                    let month = formattedDate.getMonth()+1;
+                    review.date = formattedDate.getDate() + '.' + month + '.' + formattedDate.getFullYear();
+                });
+                DBHelper.createIndexedDbReviews(reviews);
+                callback(null, reviews);
+            })
+            .catch(err => requestError(err));
+
+
+        function requestError(err) {
+            console.log(err);
+            const error = (`Request failed. The error: ${err}`);
+            //todo julia createIndexDB for reviews
+            //try to retrieve review data from indexeddb
+            DBHelper.readIndexedDbReviews(function(data){
+                callback(null, data);
+            });
+
+            callback(error, null);
+        }
+
     }
 
 }
