@@ -3,9 +3,16 @@
 
 <head>
   <!-- Main CSS file -->
-  <link rel="stylesheet" href="css/styles.css" type="text/css">
+
+  <link rel="stylesheet" href="css/styles_restaurant.css">
+  <link rel="stylesheet" href="css/styles_media_max350.css" media="(max-width: 350px)">
+  <link rel="stylesheet" href="css/styles_media_min351max600.css" media="(min-width: 351px) and (max-width: 600px)">
+  <link rel="stylesheet" href="css/styles_media_min601max700.css" media="(min-width: 601px) and (max-width: 700px)">
+  <link rel="stylesheet" href="css/styles_media_min701max900.css" media="(min-width: 701px) and (max-width: 900px)">
+  <link rel="stylesheet" href="css/styles_media_min901.css" media="(min-width: 901px)">
+
   <!-- Normalize.css for better cross-browser consistency -->
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
+  <!--<link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#673AB6">
   <title>Restaurant Info</title>
@@ -59,26 +66,35 @@
                 &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
       <div id="map"></div>
     </section>
+    <!--<section id="map-container" role="application" aria-label="map">
+      <img id = "static_map" onclick="swap_map()" alt="click to interactive map" class="lazyimg" src="img/placeholder.jpg"
+           data-src="https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&zoom=13&size=600x300&scale=2&format=jpg&maptype=roadmap
+                &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
+      <div id="map"></div>
+    </section>-->
     <!-- End map -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
       <div class="formWrapper">
         <form action="#" method="POST" id="submitReviewForm">
-          <label for="name">Name</label>
-          <input type="text" id = "name" name = "name" placeholder = "Enter your name">
+          <label for="reviewerName"></label>
+          <input type="text" id = "reviewerName" name = "name" placeholder = "Enter your name" aria-label="Enter your name">
           <label for="reviewText"></label>
-          <textarea rows="4" cols="50" id = "reviewText" placeholder = "Enter your review"></textarea>
-          <!--todo julia can berewritten in js!!!! -->
-          <label for="rating">Choose your rating</label>
-          <select id="rating">
-            <option class="rating_5" value = "5" selected="selected" >5</option>
-            <option class="rating_4" value = "4" >4</option>
-            <option class="rating_3" value = "3" >3</option>
-            <option class="rating_2" value = "2" >2</option>
-            <option class="rating_1" value = "1" >1</option>
-          </select>
-          <input id="submitId" type = "button" value = "Submit" onclick="submitReview()">
+          <textarea rows="4" cols="50" id = "reviewText" placeholder = "Enter your review" aria-label="Enter your review"></textarea>
+          <div id="ratingWrapper">
+            <div id="labelWrapper"><label for="ratingSelect" id="ratingLabel">Choose your rating</label></div>
+            <select id="ratingSelect">
+              <option class="rating_5" value = "5" selected="selected" >5</option>
+              <option class="rating_4" value = "4" >4</option>
+              <option class="rating_3" value = "3" >3</option>
+              <option class="rating_2" value = "2" >2</option>
+              <option class="rating_1" value = "1" >1</option>
+            </select>
+          </div>
+          <div id="submitWrapper">
+            <input id="submitId" type = "button" value = "Submit" onclick="submitReview()">
+          </div>
         </form>
       </div>
     </section>
@@ -94,9 +110,9 @@
   <!-- Beginning scripts -->
   <!-- Database helpers -->
 
-  <script type="text/javascript" src="js/dbhelper.js"></script>
-  <script type="text/javascript" src="js/idb.js"></script>
-  <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <script async defer type="text/javascript" src="js/dbhelper.js"></script>
+  <script async defer type="text/javascript" src="js/idb.js"></script>
+  <script async defer type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Main javascript file -->
 
   <!-- Google Maps -->
@@ -105,7 +121,6 @@
       if('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
               navigator.serviceWorker.register('/sw.js').then(function(registration) {
-//              navigator.serviceWorker.register('/mws-restaurant-stage-1/sw.js').then(function(registration) {
                   console.log('ServiceWorker registration successful');
               }).catch(function(error) {
                   console.log('ServiceWorker registration failed: ', error);
@@ -113,6 +128,7 @@
           });
       }
   </script>
+
   <!-- End scripts -->
 </body>
 </html>

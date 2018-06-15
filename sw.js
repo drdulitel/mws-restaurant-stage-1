@@ -4,39 +4,23 @@ var allCaches = [
     restaurantCache,
     imageRestaurantCache
 ];
-/*var urlsToCache = [
-    '/',
-    '/index.html',
-    '/restaurant.html',
-    '/css/styles.css',
-    '/js/dbhelper.js',
-    '/js/idb.js',
-    '/js/main.js',
-    '/js/restaurant_info.js',
-
-];*/
 
 var urlsToCache = [
     '/',
     '/index.html',
     '/restaurant.html',
-    '/css/styles.css',
+    '/css/styles_restaurant.css',
+    '/css/styles_restaurants.css',
+    '/css/styles_media_max350.css',
+    '/css/styles_media_min351max600.css',
+    '/css/styles_media_min601max700.css',
+    '/css/styles_media_min701max900.css',
+    '/css/styles_media_min901.css',
     '/js/dbhelper.js',
     '/js/idb.js',
     '/js/main.js',
     '/js/restaurant_info.js',
 ];
-/*
-var urlsToCache = [
-    '/mws-restaurant-stage-1/',
-    '/mws-restaurant-stage-1/index.html',
-    '/mws-restaurant-stage-1/restaurant.html',
-    '/mws-restaurant-stage-1/css/styles.css',
-    '/mws-restaurant-stage-1/js/dbhelper.js',
-    '/mws-restaurant-stage-1/js/idb.js',
-    '/mws-restaurant-stage-1/js/main.js',
-    '/mws-restaurant-stage-1/js/restaurant_info.js',
-];*/
 
 
 self.addEventListener('install', function(event) {
@@ -50,8 +34,8 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
     var requestUrl = new URL(event.request.url);
-    if (requestUrl.pathname.startsWith('/photos/')){
-        event.respondWith(servePhoto(event.request));
+    if (requestUrl.pathname.startsWith('/img/')){
+        event.respondWith(serveImg(event.request));
         return;
     }
 
@@ -83,7 +67,7 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
-function servePhoto(request){
+function serveImg(request){
     var storageUrl = request.url.replace(/-\d+px\.jpg$/,'');
     return caches.open(imageRestaurantCache).then(function(cache){
         return caches.match(storageUrl).then(function(response){
@@ -96,3 +80,14 @@ function servePhoto(request){
         });
     });
 }
+
+/*
+self.addEventListener('activate', function(event) {
+    event.waitUntil(caches.keys().then(function (cacheNames) {
+        return Promise.all(cacheNames.filter(function (cacheName) {
+            return cacheName.startsWith('assets-') && !CachesAll.includes(cacheName);
+        }).map(function (cacheName) {
+            return allCaches['delete'](cacheName);
+        }));
+    }));
+});*/

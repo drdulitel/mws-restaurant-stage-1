@@ -17,17 +17,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
  */
 fetchNeighborhoods = () => {
   DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    console.log('rory1');
     if (error) { // Got an error
-        console.log('rory2');
       console.error(error);
     } else {
-        console.log('rory3');
-        console.log(neighborhoods);
       self.neighborhoods = neighborhoods;
-        console.log('rory4');
       fillNeighborhoodsHTML();
-        console.log('rory5');
     }
   });
 }
@@ -86,14 +80,14 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  updateRestaurants();
-}
+ updateRestaurants();
+};
 
 /**
  * Update page and map for current restaurants.
  */
 updateRestaurants = () => {
-  console.log('updateRestaurants');
+  self.updatedRest = true;
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -104,12 +98,9 @@ updateRestaurants = () => {
   const neighborhood = nSelect[nIndex].value;
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    console.log('asdasdasds');
     if (error) { // Got an error!
       console.error(error);
     } else {
-      console.log('************************');
-      console.log(restaurants);
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
     }
@@ -139,7 +130,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
-  addMarkersToMap();
+ addMarkersToMap();
 }
 
 /**
@@ -149,9 +140,13 @@ createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
   const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.className = 'lazyimg restaurant-img';
+  // image.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
+  // image.src = DBHelper.imageUrlForRestaurant(restaurant);
+
+  image.src = "img/placeholder.jpg";
+  image.dataset.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
+  image.dataset.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = 'Picture of '+restaurant.name+' restaurant';
   li.append(image);
 
@@ -184,7 +179,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
     google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
+        window.location.href = marker.url
     });
     self.markers.push(marker);
   });
@@ -202,25 +197,24 @@ const swap_map = () => {
     }
 }
 
-//lazy loading for images using IntersectionObserver
-const images = document.querySelectorAll(".restaurant-img");
-const options = {
-    rootMargin: "50px 0px",
-    threshold: 0.01
-};
-if (!('IntersectionObserver' in window)) {
-    Array.from(images).forEach(image => preloadImage(image));
-} else {
-    let observer = new IntersectionObserver(onIntersection, options);
-    images.forEach(image => {
-        observer.observe(image);
-    });
-}
-function onIntersection(entries) {
-    entries.forEach(entry => {
-        if (entry.intersectionRatio > 0) {
-            observer.unobserve(entry.target);
-            preloadImage(entry.target);
+document.onreadystatechange = function() {
+    if(document.readyState === "complete") {
+        var lazyRestImages = [].slice.call(document.querySelectorAll("img.lazyimg"));
+        if ("IntersectionObserver" in window) {
+            let lazyRestImageObserver = new IntersectionObserver(function (entries, observer) {
+                  entries.forEach(function (entry) {
+                      if (entry.isIntersecting) {
+                          let lazyRestImage = entry.target;
+                          if (lazyRestImage.dataset.src) lazyRestImage.src = lazyRestImage.dataset.src;
+                          if (lazyRestImage.dataset.srcset) lazyRestImage.srcset = lazyRestImage.dataset.srcset;
+                          lazyRestImage.classList.remove("lazyimg");
+                          lazyRestImageObserver.unobserve(lazyRestImage);
+                      }
+                  });
+              });
+            lazyRestImages.forEach(function (lazyRestImage) {
+                lazyRestImageObserver.observe(lazyRestImage);
+            });
         }
-    });
+    }
 }

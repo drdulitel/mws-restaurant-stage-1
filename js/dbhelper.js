@@ -24,14 +24,14 @@ class DBHelper {
     static openReviewDB(){
         const indexedDB = idb.open('reviewsIndexedDB', 1, function (upgradeDb) {
             var objectStore = upgradeDb.createObjectStore('reviews', {keyPath: 'id', autoIncrement: true});
-            objectStore.createIndex('by-rest-id', 'restaurant_id', {unique: false});
+            // objectStore.createIndex('by-rest-id', 'restaurant_id');
         });
         return indexedDB;
     }
 
     static createObjectStoreFunc(name, db, transactionMode){
-        let trans = db.transaction('restaurants', transactionMode);
-        return trans.objectStore('restaurants');
+        let trans = db.transaction(name, transactionMode);
+        return trans.objectStore(name);
     }
 
     static createIndexedDbRestaurants(restaurantsData){
@@ -63,9 +63,8 @@ class DBHelper {
         });
     }
 
-
+    //Create indexeddb reviews
     static createIndexedDbReviews(reviewsData){
-
         var review = {
             db: null,
             init: function () {
@@ -102,7 +101,6 @@ class DBHelper {
     }
 
     static fetchRestaurants(callback) {
-        console.log('^^^^^^^^^^^^^^^^^^^^');
         fetch(DBHelper.DATABASE_URL, {})
             .then(response => response.json())
             .then(restaurants => {
@@ -119,11 +117,11 @@ class DBHelper {
             console.log(err);
             const error = (`Request failed. The error: ${err}`);
 
+            console.log('Trying to retrieve offline data1');
             //try to retrieve data from indexeddb
             DBHelper.readIndexedDbRestaurants(function(data){
                 callback(null, data);
             });
-
             callback(error, null);
         }
     }
@@ -203,7 +201,6 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
-      console.log('fetchRestaurantByCuisineAndNeighborhood');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -225,7 +222,6 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
-      console.log('fetchNeighborhoods');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -244,7 +240,6 @@ class DBHelper {
    * Fetch all cuisines with proper error handling.
    */
   static fetchCuisines(callback) {
-      console.log('fetchCuisines');
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -282,7 +277,6 @@ class DBHelper {
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {
-
     const marker = new google.maps.Marker({
       position: restaurant.latlng,
       title: restaurant.name,
@@ -303,6 +297,16 @@ class DBHelper {
             method: 'POST',
             headers : new Headers(),
             body:JSON.stringify({ restaurant_id: reviewData.restId, name: reviewData.name, rating: reviewData.rating, comments: reviewData.comments })
+        }).then((res) => res.json())
+            .then((data) =>  console.log(data))
+            .catch((err)=>console.log(err))
+    }
+
+    static deleteReview(reviewId){
+        fetch(DBHelper.DATABASE_URL_REVIEW + reviewId, {
+            method: 'DELETE',
+            headers : new Headers(),
+            body:JSON.stringify({})
         }).then((res) => res.json())
             .then((data) =>  console.log(data))
             .catch((err)=>console.log(err))
@@ -332,15 +336,11 @@ class DBHelper {
         function requestError(err) {
             console.log(err);
             const error = (`Request failed. The error: ${err}`);
-            //todo julia createIndexDB for reviews
-            //try to retrieve review data from indexeddb
             DBHelper.readIndexedDbReviews(function(data){
                 callback(null, data);
             });
 
             callback(error, null);
         }
-
     }
-
 }

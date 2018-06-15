@@ -82,9 +82,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img';
+  image.className = 'lazyimg restaurant-img';
   image.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  // image.dataset.srcset = DBHelper.imageUrlForRestaurantSrcset(restaurant);
+  // image.dataset.src = DBHelper.imageUrlForRestaurant(restaurant);
+  // image.src="img/placeholder.jpg";
   image.alt = 'Picture of '+restaurant.name+' restaurant';
 
   const cuisine = document.getElementById('restaurant-cuisine');
@@ -169,6 +172,7 @@ fillReviewsHTML = (reviews = self.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
+  reviews.reverse();
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
@@ -195,6 +199,15 @@ createReviewHTML = (review) => {
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+
+  const deleteButton = document.createElement('input');
+    deleteButton.type = "button";
+    deleteButton.class = "deleteReview";
+    deleteButton.value = "Delete";
+    deleteButton.dataset.revid = review.id;
+    deleteButton.onclick = deleteReview;
+
+  li.appendChild(deleteButton);
 
   return li;
 }
@@ -235,11 +248,10 @@ const swap_map = () => {
 };
 
 function submitReview(){
-  //todo julia reverse the reviews so the latest will be shown first
-  //julia here
-  let name = document.getElementById("name").value;
+
+  let name = document.getElementById("reviewerName").value;
   let review = document.getElementById("reviewText").value;
-  let selection = document.getElementById("rating");
+  let selection = document.getElementById("ratingSelect");
   let rating = selection.options[selection.selectedIndex].value;
 
   let reviewData = {name: name, rating: rating, comments: review, restId: self.restaurant.id}
@@ -253,7 +265,18 @@ function submitReview(){
 
       const container = document.getElementById('reviews-container');
       const ul = document.getElementById('reviews-list');
-      ul.appendChild(createReviewHTML(reviewData));
+      ul.insertBefore(createReviewHTML(reviewData), ul.childNodes[0]);
       container.appendChild(ul);
   }
+}
+//Delete a review
+function deleteReview(element){
+    const reviewId = element.target.dataset.revid;
+    if (reviewId){
+        DBHelper.deleteReview(reviewId);
+        const deleteButton = document.querySelectorAll('[data-revid="'+reviewId+'"]')[0];
+        const li = deleteButton.parentNode;
+        const ul = deleteButton.parentNode.parentNode;
+        ul.removeChild(li);
+    }
 }
