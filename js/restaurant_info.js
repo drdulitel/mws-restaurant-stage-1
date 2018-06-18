@@ -247,28 +247,8 @@ const swap_map = () => {
     }
 };
 
-function submitReview(){
-
-  let name = document.getElementById("reviewerName").value;
-  let review = document.getElementById("reviewText").value;
-  let selection = document.getElementById("ratingSelect");
-  let rating = selection.options[selection.selectedIndex].value;
-
-  let reviewData = {name: name, rating: rating, comments: review, restId: self.restaurant.id}
-  if (name != "" && review != ""){
-
-      var date = new Date(Date.now());
-      let month = date.getMonth()+1;
-      reviewData.date = date.getDate() + '.' + month + '.' + date.getFullYear();
-
-      DBHelper.saveReview(reviewData);
-
-      const container = document.getElementById('reviews-container');
-      const ul = document.getElementById('reviews-list');
-      ul.insertBefore(createReviewHTML(reviewData), ul.childNodes[0]);
-      container.appendChild(ul);
-  }
-}
+/*function submitReview(){
+}*/
 //Delete a review
 function deleteReview(element){
     const reviewId = element.target.dataset.revid;
@@ -280,3 +260,70 @@ function deleteReview(element){
         ul.removeChild(li);
     }
 }
+
+function _collectReviewData(){
+    let name = document.getElementById("reviewerName").value;
+    let review = document.getElementById("reviewText").value;
+    let selection = document.getElementById("ratingSelect");
+    let rating = selection.options[selection.selectedIndex].value;
+    let date = _buildReviewDate();
+    document.getElementById("errorMsg").style.display = 'none';
+     if (name.trim() == "") {
+         document.getElementById("errorMsg").style.display = 'block';
+         return false;
+     }
+
+    let reviewData = {restaurant_id: self.restaurant.id, name: name, date: date, rating: rating, comments: review}
+    return reviewData;
+}
+
+function _buildReviewDate(){
+    let date = new Date(Date.now());
+    let month = date.getMonth()+1;
+    return date.getDate() + '.' + month + '.' + date.getFullYear();
+}
+
+function _addReviewToHtml(reviewData){
+    const container = document.getElementById('reviews-container');
+    const ul = document.getElementById('reviews-list');
+    ul.insertBefore(createReviewHTML(reviewData), ul.childNodes[0]);
+    container.appendChild(ul);
+}
+
+function _cleanReviewForm(){
+     document.getElementById("reviewerName").value = '';
+     document.getElementById("reviewText").value = '';
+    let selection = document.getElementById("ratingSelect");
+    selection.options[selection.selectedIndex].innerHTML = 5;
+}
+
+
+let submitButton = document.getElementById('submitId');
+submitButton.addEventListener('click', function(event) {
+    let reviewData = _collectReviewData();
+    if (reviewData){
+        _addReviewToHtml(reviewData);
+        DBHelper.sendReviewToServer(reviewData, function(err, data){
+            if (err) reviewData.offline = true;
+            //if (data) console.log(data); //The review saved in the server
+        });
+        DBHelper.addReview(reviewData);
+        _cleanReviewForm();
+    }
+});
+
+window.addEventListener('online', function(){
+    DBHelper.readIndexedDbReviews(function(reviews) {
+        return Promise.all(reviews.map(function (review) {
+            if (review.offline){
+                DBHelper.sendReviewToServer(review, function(err, data){
+                    if (err)  review.offline = true;
+                    if (data) {
+                        review.offline = false;
+                        DBHelper.addReview(review);
+                    }
+                });
+            }
+        }))
+    });
+});

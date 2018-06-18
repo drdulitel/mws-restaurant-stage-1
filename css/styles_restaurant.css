@@ -221,3 +221,7 @@ nav h1 a {
   color: #666;
   font-size: 15pt;
 }
+#errorMsg{
+  color: red;
+  display: none;
+}

@@ -66,12 +66,6 @@
                 &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
       <div id="map"></div>
     </section>
-    <!--<section id="map-container" role="application" aria-label="map">
-      <img id = "static_map" onclick="swap_map()" alt="click to interactive map" class="lazyimg" src="img/placeholder.jpg"
-           data-src="https://maps.googleapis.com/maps/api/staticmap?center=40.722216,-73.987501&zoom=13&size=600x300&scale=2&format=jpg&maptype=roadmap
-                &key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4">
-      <div id="map"></div>
-    </section>-->
     <!-- End map -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
@@ -79,7 +73,8 @@
       <div class="formWrapper">
         <form action="#" method="POST" id="submitReviewForm">
           <label for="reviewerName"></label>
-          <input type="text" id = "reviewerName" name = "name" placeholder = "Enter your name" aria-label="Enter your name">
+          <input type="text" id = "reviewerName" name = "name" placeholder = "Enter your name" aria-label="Enter your name" aria-required="true" required>
+          <div id="errorMsg">Please fill your name</div>
           <label for="reviewText"></label>
           <textarea rows="4" cols="50" id = "reviewText" placeholder = "Enter your review" aria-label="Enter your review"></textarea>
           <div id="ratingWrapper">
@@ -93,9 +88,11 @@
             </select>
           </div>
           <div id="submitWrapper">
-            <input id="submitId" type = "button" value = "Submit" onclick="submitReview()">
+            <input id="submitId" type = "button" value = "Submit">
+            <!--<input id="submitId" type = "button" value = "Submit" onclick="submitReview()">-->
           </div>
         </form>
+
       </div>
     </section>
     <!-- End reviews -->
@@ -117,11 +114,45 @@
 
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArp4s6XFCGD1Z0ifhFFEEIXx6qPW1APe4&libraries=places&callback=initMap"></script>
+
+
   <script>
+
+
       if('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
               navigator.serviceWorker.register('/sw.js').then(function(registration) {
                   console.log('ServiceWorker registration successful');
+/*                  if ('sync' in registration) {
+                      var form = document.getElementById('submitReviewForm');
+                      const reviewerName = form.querySelector('#reviewerName');
+                      const reviewText = form.querySelector('#reviewText');
+                      const rating = form.querySelector('#ratingSelect');
+
+                      var submitButton = document.getElementById('submitId');
+
+                      submitButton.addEventListener('click', function(event) {
+                          console.log('submit review');
+                          event.preventDefault();
+
+                          var review = {
+                              restaurant_id: '',
+                              name: reviewerName.value,
+                              rating: rating.value,
+                              comments: reviewText.value,
+                          };
+                          DBHelper.addReview(review);
+
+                          submitReview();
+                          reviewerName.value = '';
+                          reviewText.value = '';
+                          rating.value = 5;
+
+                        //  if (!navigator.onLine){
+                          //    return registration.sync.register('review');
+                        //  }
+                      });
+                  }*/
               }).catch(function(error) {
                   console.log('ServiceWorker registration failed: ', error);
               });

@@ -25,4 +25,23 @@ In a terminal, check the version of Python you have: `python -V`. If you have Py
 Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
 
 
+### Description
+On the first page there is a list of all restaurants, their name, neighborhood, address and star to check it as favorite restaurant. Also you have filter for the restaurants by cuisines or neighborhoods. At the end of the page there is map with markers of all the restaurants.
+Clicking on the details of a restaurant redirect you to a page of the restaurant where you can also favorite or unfavorite a restaurant, restaurant name, address, opening hours, map and list of reviews to this restaurant. Also you can delete each review or add your own review.
+By writing your name, comment and rating.
 
+
+###
+All the restaurants are saved in indexeddb
+All the reviews are saved in indexedb
+When the user adds a new review I show it in the UI, adding it to indexeddb and if the user online sending the review to the server, 
+if the user offline I'm listening till the users comes back online and than sending the added review/s to the server.
+
+###
+We can delete any review when online.
+As it wasn't asked in the project, I didn't implement the deletion in offline mode (yet).
+
+###
+The reviewer must enter his name otherwite he can't submit his review. 
+ 
+ 

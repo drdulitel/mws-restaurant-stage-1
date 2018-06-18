@@ -1,6 +1,7 @@
 /**
  * Common database helper functions.
  */
+
 class DBHelper {
 
     static get DATABASE_URL() {
@@ -65,29 +66,37 @@ class DBHelper {
 
     //Create indexeddb reviews
     static createIndexedDbReviews(reviewsData){
-        var review = {
+        var storeReview = {
             db: null,
             init: function () {
 
-                if (review.db) {
-                    return Promise.resolve(review.db);
+                if (storeReview.db) {
+                    return Promise.resolve(storeReview.db);
                 }
                 return DBHelper.openReviewDB().then(function (db) {
-                    return review.db = db;
+                    return storeReview.db = db;
                 });
             },
 
             reviewObjectStore: function (transMode) {
-                return review.init().then(function (db) {
+                return storeReview.init().then(function (db) {
                     return DBHelper.createObjectStoreFunc('reviews', db, transMode);
                 })
             }
         };
 
-        review.reviewObjectStore('readwrite').then(function (reviewObjectStore) {
+        storeReview.reviewObjectStore('readwrite').then(function (reviewObjectStore) {
             reviewsData.forEach(function (review) {
                 reviewObjectStore.put(review);
             });
+        });
+    }
+
+    static addReview(review){
+        review.restaurant_id = self.restaurant.id;
+        DBHelper.openReviewDB().then(function(db) {
+            var transaction = db.transaction('reviews', 'readwrite');
+            return transaction.objectStore('reviews').put(review);
         });
     }
 
@@ -290,16 +299,20 @@ class DBHelper {
     /**
      * Save Review
      */
-    // static saveReview(reviewData , callback) {
-    static saveReview(reviewData) {
-
+    static sendReviewToServer(reviewData, callback) {
         fetch(DBHelper.DATABASE_URL_REVIEW, {
             method: 'POST',
             headers : new Headers(),
-            body:JSON.stringify({ restaurant_id: reviewData.restId, name: reviewData.name, rating: reviewData.rating, comments: reviewData.comments })
+            body:JSON.stringify({ restaurant_id: reviewData.restaurant_id, name: reviewData.name, rating: reviewData.rating, comments: reviewData.comments })
         }).then((res) => res.json())
-            .then((data) =>  console.log(data))
-            .catch((err)=>console.log(err))
+            .then((data) => {
+                //console.log(data);
+                callback(null, data);
+            })
+            .catch((err)=>{
+                console.log(err);
+                callback(err, null);
+            })
     }
 
     static deleteReview(reviewId){
@@ -308,8 +321,8 @@ class DBHelper {
             headers : new Headers(),
             body:JSON.stringify({})
         }).then((res) => res.json())
-            .then((data) =>  console.log(data))
-            .catch((err)=>console.log(err))
+        .then((data) =>console.log(data))
+        .catch((err)=>console.log(err))
     }
 
     //Fetch reviews by restaurant id
@@ -339,7 +352,6 @@ class DBHelper {
             DBHelper.readIndexedDbReviews(function(data){
                 callback(null, data);
             });
-
             callback(error, null);
         }
     }

@@ -5,14 +5,6 @@ var map
 var markers = []
 
 /**
- * Fetch neighborhoods and cuisines as soon as the page is loaded.
- */
-document.addEventListener('DOMContentLoaded', (event) => {
-  fetchNeighborhoods();
-  fetchCuisines();
-});
-
-/**
  * Fetch all neighborhoods and set their HTML.
  */
 fetchNeighborhoods = () => {
@@ -80,7 +72,7 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
- updateRestaurants();
+    updateRestaurants();
 };
 
 /**
@@ -150,6 +142,22 @@ createRestaurantHTML = (restaurant) => {
   image.alt = 'Picture of '+restaurant.name+' restaurant';
   li.append(image);
 
+  const favImgWrapper = document.createElement('div');
+  const favImg = document.createElement('img');
+  favImg.className = 'star';
+  var fav = restaurant.is_favorite;
+  (fav) ? setFavoriteResImg(favImg) : unsetFavoriteResImg(favImg);
+  //favImg.value = restaurant.id;
+  favImg.dataset.fav = fav;
+  favImg.onclick = function(){
+      fav = !fav;
+      saveFavoriteInDb(restaurant.id, fav);
+      (fav) ? setFavoriteResImg(favImg) : unsetFavoriteResImg(favImg);
+      favImg.dataset.fav = fav;
+  };
+  favImgWrapper.append(favImg);
+  li.append(favImgWrapper);
+
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.append(name);
@@ -166,11 +174,29 @@ createRestaurantHTML = (restaurant) => {
   more.innerHTML = 'View Details';
   more.setAttribute('aria-label','View Details of '+restaurant.name+' restaurant');
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  li.append(more);
 
   return li
 }
+function saveFavoriteInDb(favoriteRestId, fav){
+    DBHelper.setFavoriteRestaurantById(favoriteRestId, fav, (error, restaurant) => {
+        self.restaurant = restaurant;
+        if (!restaurant) {
+            console.error(error);
+            return;
+        }
+        callback(null, restaurant)
+    });
+}
 
+function setFavoriteResImg(imgElement){
+    imgElement.src = 'img/star_fav.png';
+    imgElement.alt = 'My favorite restaurant';
+}
+function unsetFavoriteResImg(imgElement){
+    imgElement.src = 'img/star_unfav.png';
+    imgElement.alt = 'Choose me as favorite restaurant';
+}
 /**
  * Add markers for current restaurants to the map.
  */
